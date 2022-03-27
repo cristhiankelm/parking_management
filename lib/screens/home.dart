@@ -15,7 +15,7 @@ class ListRegister extends StatefulWidget {
 
 class _ListRegisterState extends State<ListRegister> {
   Future<List> getData() async {
-    final response = await http.get("http://192.168.0.17/home/getdata.php");
+    final response = await http.get("#");
     return json.decode(response.body);
   }
 
