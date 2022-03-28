@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 
 import 'screens/screens.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const Myapp());
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Myapp extends StatelessWidget {
+  const Myapp({Key? key}) : super(key: key);
 
-  @override
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'Peliculas',
+      debugShowCheckedModeBanner: false,
       initialRoute: 'home',
       routes: {
         'home': (_) => HomeScreens(),
-        'detalles': (_) => DetallesScreens()
+        'detalles': (_) => DetailScreens()
       },
-      theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(color: Colors.indigo),
-      ),
+      theme: ThemeData.light()
+          .copyWith(appBarTheme: AppBarTheme(color: Colors.indigo)),
     );
   }
 }
