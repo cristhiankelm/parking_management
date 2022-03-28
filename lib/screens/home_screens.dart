@@ -29,7 +29,7 @@ class HomeScreens extends StatelessWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Chapa',
-                  hintText: 'Describe la chapa del vehículo',
+                  hintText: 'Chapa del Vehículo',
                   icon: Icon(Icons.lock_outline),
                   isDense: true,
                 ),
@@ -40,7 +40,7 @@ class HomeScreens extends StatelessWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Modelo',
-                  hintText: 'Describe el modelo del auto',
+                  hintText: 'Modelo del Vehículo',
                   icon: Icon(Icons.car_rental),
                   isDense: true,
                 ),
@@ -51,7 +51,7 @@ class HomeScreens extends StatelessWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Marca',
-                  hintText: 'Describe la marca del auto',
+                  hintText: 'Marca del Vehículo',
                   icon: Icon(Icons.dinner_dining),
                   isDense: true,
                 ),
@@ -62,7 +62,7 @@ class HomeScreens extends StatelessWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Horario',
-                  hintText: 'Describe la marca del auto',
+                  hintText: '',
                   icon: Icon(Icons.punch_clock),
                   isDense: true,
                 ),
