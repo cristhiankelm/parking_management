@@ -4,19 +4,27 @@ class HomeScreens extends StatelessWidget {
   const HomeScreens({Key? key}) : super(key: key);
 
   Widget fieldPlate() {
-    return TextFormField(decoration: InputDecoration(labelText: 'Chapa'));
+    return TextFormField(
+        decoration: InputDecoration(
+            labelText: 'Chapa', icon: Icon(Icons.paste_rounded)));
   }
 
   Widget fieldEmail() {
-    return TextFormField(decoration: InputDecoration(labelText: 'Marca'));
+    return TextFormField(
+        decoration: InputDecoration(
+            labelText: 'Marca', icon: Icon(Icons.paste_rounded)));
   }
 
   Widget fieldModel() {
-    return TextFormField(decoration: InputDecoration(labelText: 'Modelo'));
+    return TextFormField(
+        decoration: InputDecoration(
+            labelText: 'Modelo', icon: Icon(Icons.receipt_long_rounded)));
   }
 
   Widget fieldClock() {
-    return TextFormField(decoration: InputDecoration(labelText: 'Hora'));
+    return TextFormField(
+        decoration: InputDecoration(
+            labelText: 'Hora', icon: Icon(Icons.calendar_month_rounded)));
   }
 
   @override
