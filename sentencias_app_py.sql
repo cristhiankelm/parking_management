@@ -14,14 +14,49 @@ CREATE TABLE IF NOT EXISTS user(
 )ENGINE=InnoDB;
 
 
+--DEPARTMENT TABLE
+
+CREATE TABLE IF NOT EXISTS department(
+    id                      INT AUTO_INCREMENT NOT NULL,
+    name                    VARCHAR(200) NOT NULL,
+    created_at              datetime,
+    updated_at              datetime,
+    CONSTRAINT pk_department    PRIMARY KEY (id)
+)ENGINE=InnoDB;
+
+--CITY TABLE
+
+CREATE TABLE IF NOT EXISTS city(
+    id                      INT AUTO_INCREMENT NOT NULL,
+    dep_fk                  INT,
+    name                    VARCHAR(200) NOT NULL,
+    created_at              datetime,
+    updated_at              datetime,
+    CONSTRAINT pk_city    PRIMARY KEY (id),
+    CONSTRAINT fk_city_department    FOREIGN KEY(dep_fk) REFERENCES department(id)
+)ENGINE=InnoDB;
+
+--NEIGHBORHOOD TABLE
+CREATE TABLE IF NOT EXISTS neig(
+    id                      INT AUTO_INCREMENT NOT NULL,
+    city_fk                 INT,
+    name                    VARCHAR(200) NOT NULL,
+    created_at              datetime,
+    updated_at              datetime,
+    CONSTRAINT pk_neig    PRIMARY KEY (id),
+    CONSTRAINT fk_neig_city    FOREIGN KEY(city_fk) REFERENCES city(id)
+)ENGINE=InnoDB;
+
 --STREET TABLE
 
 CREATE TABLE IF NOT EXISTS street(
     id                      INT AUTO_INCREMENT NOT NULL,
-    name                    VARCHAR(50) NOT NULL,
+    neig_fk                 INT,
+    name                    VARCHAR(200) NOT NULL,
     created_at              datetime,
     updated_at              datetime,
-    CONSTRAINT pk_street    PRIMARY KEY (id)
+    CONSTRAINT pk_street    PRIMARY KEY (id),
+    CONSTRAINT fk_street_neig    FOREIGN KEY(neig_fk) REFERENCES neig(id)
 )ENGINE=InnoDB;
 
 
