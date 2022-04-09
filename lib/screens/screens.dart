@@ -1,2 +1,3 @@
-export 'package:parking_management/screens/detail_screens.dart';
-export 'package:parking_management/screens/home_screens.dart';
+export 'package:parking_management/screens/home_screen.dart';
+export 'package:parking_management/screens/login_screen.dart';
+export 'package:parking_management/screens/street_screen.dart';
