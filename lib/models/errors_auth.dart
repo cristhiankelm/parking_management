@@ -7,4 +7,8 @@ class ErrorsAuth {
     errors.add(json['errors']['email'].toString());
     errors.add(json['errors']['password'].toString());
   }
+  // ErrorsAuth.fromJson(Map<String, dynamic> json) {
+  //   message = json['message'];
+  //   errors.add(json['errors']);
+  // }
 }

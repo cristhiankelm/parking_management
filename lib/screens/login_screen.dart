@@ -3,7 +3,8 @@ import 'dart:core';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:parking_management/models/user_model.dart';
-import 'package:parking_management/services/auth_service.dart';
+import 'package:parking_management/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -13,12 +14,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
   bool signin = true;
   bool processing = false;
   late TextEditingController namectrl, emailctrl, passctrl;
   User user = User();
-  final authProvider = AuthService();
-
   @override
   void initState() {
     super.initState();
@@ -49,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void changeState() {
     cleanFields();
+    _formKey.currentState!.reset();
     if (signin) {
       setState(() {
         signin = false;
@@ -66,15 +67,6 @@ class _LoginPageState extends State<LoginPage> {
     passctrl.clear();
   }
 
-  void verifyFields() {
-    if (emailctrl.text.isEmpty ||
-        namectrl.text.isEmpty ||
-        passctrl.text.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "completar todos los campos", toastLength: Toast.LENGTH_SHORT);
-    }
-  }
-
   void createUser() {
     user.name = namectrl.text;
     user.email = emailctrl.text;
@@ -82,23 +74,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   registerUser() async {
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
     setState(() {
       processing = true;
     });
 
-    verifyFields();
     createUser();
 
     List res = await authProvider.registerUser(user);
 
     if (res.contains("200")) {
+      cleanFields();
+      Navigator.pushReplacementNamed(context, 'home', arguments: user);
       Fluttertoast.showToast(
         msg: "Cuenta creada",
         toastLength: Toast.LENGTH_SHORT,
       );
-      user = authProvider.user;
-      Navigator.pushNamed(context, 'home', arguments: user);
-      cleanFields();
     } else if (res[1]
         .contains("The password must contain at least one number.")) {
       Fluttertoast.showToast(
@@ -129,6 +120,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void userSignIn() async {
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
     setState(() {
       processing = true;
     });
@@ -138,8 +130,8 @@ class _LoginPageState extends State<LoginPage> {
     int res = await authProvider.userSignIn(user);
 
     if (res == 200) {
+      Navigator.pushReplacementNamed(context, 'home');
       Fluttertoast.showToast(msg: "success", toastLength: Toast.LENGTH_SHORT);
-      Navigator.pushNamed(context, 'home');
     } else if (res == 422) {
       Fluttertoast.showToast(
           msg: "usuario o contraseña incorrecta",
@@ -199,92 +191,144 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget signInUi() {
-    return Column(
-      children: <Widget>[
-        TextField(
-          controller: emailctrl,
-          decoration: const InputDecoration(
-              prefixIcon: Icon(
-                Icons.account_box,
-                color: Color.fromARGB(255, 0, 80, 200),
-              ),
-              hintText: 'email'),
-        ),
-        TextField(
-          controller: passctrl,
-          decoration: const InputDecoration(
-              prefixIcon: Icon(
-                Icons.lock,
-                color: Color.fromARGB(255, 0, 80, 200),
-              ),
-              hintText: 'contraseña'),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-        MaterialButton(
-            onPressed: () => userSignIn(),
-            child: processing == false
-                ? Text(
-                    'Iniciar sesión',
-                    style: GoogleFonts.varelaRound(
-                        fontSize: 18.0,
-                        color: const Color.fromARGB(255, 0, 80, 200)),
-                  )
-                : const CircularProgressIndicator(
-                    backgroundColor: Colors.green,
-                  )),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          TextFormField(
+            validator: ((value) {
+              if (!value!.contains("@")) {
+                return "E-mail invalido";
+              } else if (value.length < 5) {
+                return "E-mail invalido";
+              }
+              return null;
+            }),
+            controller: emailctrl,
+            decoration: const InputDecoration(
+                prefixIcon: Icon(
+                  Icons.account_box,
+                  color: Color.fromARGB(255, 0, 80, 200),
+                ),
+                hintText: 'email'),
+          ),
+          TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Contraseña invalido";
+              }
+              return null;
+            },
+            controller: passctrl,
+            decoration: const InputDecoration(
+                prefixIcon: Icon(
+                  Icons.lock,
+                  color: Color.fromARGB(255, 0, 80, 200),
+                ),
+                hintText: 'contraseña'),
+          ),
+          const SizedBox(
+            height: 10.0,
+          ),
+          MaterialButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  userSignIn();
+                }
+              },
+              child: processing == false
+                  ? Text(
+                      'Iniciar sesión',
+                      style: GoogleFonts.varelaRound(
+                          fontSize: 18.0,
+                          color: const Color.fromARGB(255, 0, 80, 200)),
+                    )
+                  : const CircularProgressIndicator(
+                      backgroundColor: Colors.green,
+                    )),
+        ],
+      ),
     );
   }
 
   Widget signUpUi() {
-    return Column(
-      children: <Widget>[
-        TextField(
-          controller: namectrl,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(
-              Icons.person,
-              color: Color.fromARGB(255, 0, 80, 200),
-            ),
-            hintText: 'nombre',
-          ),
-        ),
-        TextField(
-          controller: emailctrl,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(
-              Icons.account_box,
-              color: Color.fromARGB(255, 0, 80, 200),
-            ),
-            hintText: 'email',
-          ),
-        ),
-        TextField(
-          controller: passctrl,
-          decoration: const InputDecoration(
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          TextFormField(
+            validator: ((value) {
+              if (value!.isEmpty) {
+                return "Campo obligatorio";
+              } else if (value.length <= 2) {
+                return "Nombre invalido";
+              }
+              return null;
+            }),
+            controller: namectrl,
+            decoration: const InputDecoration(
               prefixIcon: Icon(
-                Icons.lock,
+                Icons.person,
                 color: Color.fromARGB(255, 0, 80, 200),
               ),
-              hintText: 'contraseña'),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-        MaterialButton(
-            onPressed: () => registerUser(),
-            child: processing == false
-                ? Text(
-                    'Inscribirse',
-                    style: GoogleFonts.varelaRound(
-                        fontSize: 18.0,
-                        color: const Color.fromARGB(255, 0, 80, 200)),
-                  )
-                : const CircularProgressIndicator(
-                    backgroundColor: Colors.green)),
-      ],
+              hintText: 'nombre',
+            ),
+          ),
+          TextFormField(
+            validator: ((value) {
+              if (value!.isEmpty) {
+                return "Campo obligatorio";
+              } else if (value.length < 5) {
+                return "E-mail invalido";
+              } else if (!value.contains("@")) {
+                return "E-mail invalido";
+              }
+              return null;
+            }),
+            controller: emailctrl,
+            decoration: const InputDecoration(
+              prefixIcon: Icon(
+                Icons.account_box,
+                color: Color.fromARGB(255, 0, 80, 200),
+              ),
+              hintText: 'email',
+            ),
+          ),
+          TextFormField(
+            validator: ((value) {
+              if (value!.isEmpty) {
+                return "Campo obligatorio";
+              }
+              return null;
+            }),
+            controller: passctrl,
+            decoration: const InputDecoration(
+                prefixIcon: Icon(
+                  Icons.lock,
+                  color: Color.fromARGB(255, 0, 80, 200),
+                ),
+                hintText: 'contraseña'),
+          ),
+          const SizedBox(
+            height: 10.0,
+          ),
+          MaterialButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  registerUser();
+                }
+              },
+              child: processing == false
+                  ? Text(
+                      'Inscribirse',
+                      style: GoogleFonts.varelaRound(
+                          fontSize: 18.0,
+                          color: const Color.fromARGB(255, 0, 80, 200)),
+                    )
+                  : const CircularProgressIndicator(
+                      backgroundColor: Colors.green)),
+        ],
+      ),
     );
   }
 }

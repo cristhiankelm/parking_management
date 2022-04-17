@@ -1,21 +1,23 @@
-class State {
-  int? id;
-  String? state;
+class Department {
+  late int? id;
+  late String? name;
 
-  State({this.id, this.state});
+  Department({
+    this.name,
+  });
 
-  State.fromJson(Map<String, dynamic> json) {
+  Department.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    state = json['state'];
+    name = json['name'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['state'] = state;
+    data['name'] = name;
     return data;
   }
 
   @override
-  String toString() => "Departamento: $id, $state";
+  String toString() => name!;
 }

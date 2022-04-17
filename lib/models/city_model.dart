@@ -1,27 +1,29 @@
-class District {
+class City {
   late int id;
-  late int? cityId;
   late String? name;
+  late int? stateId;
 
-  District({
-    this.cityId,
+  City({
     this.name,
+    this.stateId,
   });
 
-  District.fromJson(Map<String, dynamic> json) {
+  City.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    cityId = json['city'][0]['id'];
     name = json['name'];
+    stateId = json['departments'][0]['id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
-    data['city_id'] = cityId;
+    data['departments_id'] = stateId;
     return data;
   }
 
   @override
-  String toString() => "$name";
+  String toString() {
+    return name!;
+  }
 }

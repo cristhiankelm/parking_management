@@ -5,13 +5,7 @@ class User {
   String? password;
   String? token;
 
-  User({
-    this.id,
-    this.email,
-    this.name,
-    this.password,
-    this.token,
-  });
+  User();
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['user']['id'];
@@ -22,10 +16,10 @@ class User {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
     data['email'] = email;
     data['name'] = name;
     data['password'] = password;
+    data['password_confirmation'] = password;
     return data;
   }
 }
