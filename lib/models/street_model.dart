@@ -3,13 +3,13 @@ import 'package:parking_management/models/district_model.dart';
 import 'package:parking_management/models/state_model.dart';
 
 class Street {
-  late int id;
+  late int? id;
   late String? name;
   late District? district = District();
   late City city = City();
   late Department state = Department();
 
-  Street({this.name, this.district});
+  Street({this.id, this.name, this.district});
 
   Street.fromJson(Map<String, dynamic> json) {
     id = json['id'];

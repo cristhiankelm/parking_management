@@ -6,7 +6,12 @@ import 'package:parking_management/models/street_model.dart';
 import 'package:parking_management/services/license_plate_service.dart';
 
 class LicenseProvider {
-  List<LicensePlate> licenses = [];
+  List<LicensePlate> licenses = [
+    LicensePlate(id: 1, enroliment: "FDWA813", street: Street(id: 1)),
+    LicensePlate(id: 2, enroliment: "DSFS813", street: Street(id: 2)),
+    LicensePlate(id: 3, enroliment: "EFD854", street: Street(id: 3)),
+    LicensePlate(id: 4, enroliment: "FDT823", street: Street(id: 4))
+  ];
   List<LicensePlate> listLicenses = [];
 
   Street? street;
@@ -15,7 +20,7 @@ class LicenseProvider {
 
   var status;
 
-  filterCities() {
+  filterLicenses() {
     for (var i = 0; i < licenses.length; i++) {
       if (licenses[i].street!.id == street!.id) {
         listLicenses.add(licenses[i]);

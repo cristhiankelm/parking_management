@@ -5,6 +5,7 @@ import 'package:parking_management/models/district_model.dart';
 import 'package:parking_management/models/state_model.dart';
 import 'package:parking_management/models/street_model.dart';
 import 'package:parking_management/providers/auth_provider.dart';
+import 'package:parking_management/providers/license_plate_provider.dart';
 import 'package:parking_management/providers/street_provider.dart';
 import 'package:parking_management/widgets/appbar.dart';
 import 'package:parking_management/widgets/button_street.dart';
@@ -31,8 +32,35 @@ class _StreetPageState extends State<StreetPage> {
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<StreetProvider>(context, listen: false);
+    var providerStreet = Provider.of<StreetProvider>(context, listen: false);
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    bool verifyCity(String value) {
+      for (var i = 0; i < providerStreet.cities.length; i++) {
+        if (providerStreet.cities[i].toString() == value) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    bool verifyDistrict(String value) {
+      for (var i = 0; i < providerStreet.districts.length; i++) {
+        if (providerStreet.districts[i].toString() == value) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    bool verifyState(String value) {
+      for (var i = 0; i < providerStreet.states.length; i++) {
+        if (providerStreet.states[i].toString() == value) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     return Scaffold(
       drawer: const AppDrawer(),
@@ -56,7 +84,7 @@ class _StreetPageState extends State<StreetPage> {
                     if (textEditingValue.text.isEmpty) {
                       return const Iterable<Department>.empty();
                     } else {
-                      var autoCompleteData = provider.states;
+                      var autoCompleteData = providerStreet.states;
                       return autoCompleteData
                           .where((state) => state.name!
                               .toLowerCase()
@@ -93,10 +121,10 @@ class _StreetPageState extends State<StreetPage> {
                   onSelected: (selectedState) {
                     controllerCity.clear();
                     controllerDistrict.clear();
-                    provider.listDistricts.clear();
-                    provider.listCities.clear();
-                    provider.state = selectedState;
-                    provider.filterCities();
+                    providerStreet.listDistricts.clear();
+                    providerStreet.listCities.clear();
+                    providerStreet.state = selectedState;
+                    providerStreet.filterCities();
                   },
                   fieldViewBuilder: (
                     context,
@@ -109,6 +137,8 @@ class _StreetPageState extends State<StreetPage> {
                       validator: ((value) {
                         if (value!.isEmpty) {
                           return "Campo obligatorio";
+                        } else if (!verifyState(value)) {
+                          return "Seleccione un departamento valido";
                         }
                         return null;
                       }),
@@ -142,7 +172,7 @@ class _StreetPageState extends State<StreetPage> {
                     if (textEditingValue.text.isEmpty) {
                       return const Iterable<City>.empty();
                     } else {
-                      var autoCompleteData = provider.listCities;
+                      var autoCompleteData = providerStreet.listCities;
                       return autoCompleteData.where((city) => city.name!
                           .toLowerCase()
                           .contains(textEditingValue.text.toLowerCase()));
@@ -176,9 +206,9 @@ class _StreetPageState extends State<StreetPage> {
                   },
                   onSelected: (selectedCity) {
                     controllerDistrict.clear();
-                    provider.listDistricts.clear();
-                    provider.city = selectedCity;
-                    provider.filterDistricts();
+                    providerStreet.listDistricts.clear();
+                    providerStreet.city = selectedCity;
+                    providerStreet.filterDistricts();
                   },
                   fieldViewBuilder: (
                     context,
@@ -191,6 +221,8 @@ class _StreetPageState extends State<StreetPage> {
                       validator: ((value) {
                         if (value!.isEmpty) {
                           return "Campo obligatorio";
+                        } else if (!verifyCity(value)) {
+                          return "Seleccione una ciudad valida";
                         }
                         return null;
                       }),
@@ -224,7 +256,7 @@ class _StreetPageState extends State<StreetPage> {
                     if (textEditingValue.text.isEmpty) {
                       return const Iterable<District>.empty();
                     } else {
-                      var autoCompleteData = provider.listDistricts;
+                      var autoCompleteData = providerStreet.listDistricts;
                       return autoCompleteData.where((district) => district.name!
                           .toLowerCase()
                           .contains(textEditingValue.text.toLowerCase()));
@@ -257,7 +289,7 @@ class _StreetPageState extends State<StreetPage> {
                     );
                   },
                   onSelected: (selectedDistric) {
-                    provider.district = selectedDistric;
+                    providerStreet.district = selectedDistric;
                   },
                   fieldViewBuilder: (
                     context,
@@ -270,10 +302,10 @@ class _StreetPageState extends State<StreetPage> {
                       validator: (value) {
                         if (addDistrict) {
                           return null;
-                        } else {
-                          if (value!.isEmpty) {
-                            return "Campo obligatorio";
-                          }
+                        } else if (value!.isEmpty) {
+                          return "Campo obligatorio";
+                        } else if (!verifyDistrict(value)) {
+                          return "Seleccione un barrio valido";
                         }
                         return null;
                       },
@@ -318,69 +350,89 @@ class _StreetPageState extends State<StreetPage> {
                         child: TextField(
                           controller: controllerNewDistrict,
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            labelText: "Nuevo Barrio",
-                            labelStyle: const TextStyle(fontSize: 15),
-                            suffix: showTextButtonDistrict
-                                ? TextButton(
-                                    onPressed: () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        setState(() {
-                                          showTextButtonDistrict = false;
-                                        });
-                                        District district = District(
-                                            name: controllerNewDistrict.text,
-                                            cityId: provider.city!.id);
-                                        if (await provider.addDistrict(
-                                                district,
-                                                authProvider
-                                                    .userCurrent.token!) ==
-                                            true) {
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              labelText: "Nuevo Barrio",
+                              labelStyle: const TextStyle(fontSize: 15),
+                              suffix: showTextButtonDistrict
+                                  ? TextButton(
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
                                           setState(() {
-                                            addDistrict = false;
-                                            showTextButtonDistrict = true;
+                                            showTextButtonDistrict = false;
                                           });
-                                          controllerNewDistrict.clear();
-                                          provider.filterDistricts();
-                                          Fluttertoast.showToast(
-                                            msg: "Barrio registrado",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                          );
-                                        } else {
-                                          controllerNewDistrict.clear();
-                                          setState(() {
-                                            addDistrict = false;
-                                            showTextButtonDistrict = true;
-                                          });
-                                          Fluttertoast.showToast(
-                                            msg: "Error",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                          );
+                                          District district = District(
+                                              name: controllerNewDistrict.text,
+                                              cityId: providerStreet.city!.id);
+                                          if (await providerStreet.addDistrict(
+                                                  district,
+                                                  authProvider
+                                                      .userCurrent.token!) ==
+                                              true) {
+                                            setState(() {
+                                              addDistrict = false;
+                                              showTextButtonDistrict = true;
+                                            });
+                                            controllerNewDistrict.clear();
+                                            providerStreet.filterDistricts();
+                                            Fluttertoast.showToast(
+                                              msg: "Barrio registrado",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                            );
+                                          } else if (controllerNewDistrict
+                                              .text.isEmpty) {
+                                            controllerNewDistrict.clear();
+                                            setState(() {
+                                              showTextButtonDistrict = true;
+                                            });
+                                            Fluttertoast.showToast(
+                                              msg: "Ingrese un barrio valido",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                            );
+                                          } else {
+                                            controllerNewDistrict.clear();
+                                            setState(() {
+                                              addDistrict = false;
+                                              showTextButtonDistrict = true;
+                                            });
+                                            Fluttertoast.showToast(
+                                              msg: "Error",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                            );
+                                          }
                                         }
-                                      }
-                                    },
-                                    child: const Text(
-                                      "Guardar",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Color.fromARGB(255, 0, 80, 200),
+                                      },
+                                      child: const Text(
+                                        "Guardar",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color:
+                                              Color.fromARGB(255, 0, 80, 200),
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : const CircularProgressIndicator(
-                                    backgroundColor: Colors.green),
-                          ),
+                                    )
+                                  : Container(
+                                      width: 20,
+                                      height: 20,
+                                      margin: const EdgeInsets.only(
+                                          top: 20, right: 5),
+                                      child: const CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        backgroundColor: Colors.green,
+                                      ))),
                         ),
                       )
                     : Container(),
@@ -447,10 +499,10 @@ class _StreetPageState extends State<StreetPage> {
                                     if (_formKey.currentState!.validate()) {
                                       Street street = Street(
                                         name: controllerStreet.text,
-                                        district: provider.district!,
+                                        district: providerStreet.district!,
                                       );
 
-                                      if (await provider.addStreet(
+                                      if (await providerStreet.addStreet(
                                               street,
                                               authProvider
                                                   .userCurrent.token!) ==

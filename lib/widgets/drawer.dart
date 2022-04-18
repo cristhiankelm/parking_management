@@ -23,6 +23,9 @@ class AppDrawer extends StatelessWidget {
               ),
               child: Column(
                 children: [
+                  Expanded(
+                    child: Container(),
+                  ),
                   const SizedBox(
                     width: 130,
                     // child: Image.asset(
@@ -31,7 +34,7 @@ class AppDrawer extends StatelessWidget {
                     // )
                   ),
                   Container(
-                    padding: const EdgeInsets.only(top: 5, left: 15),
+                    padding: const EdgeInsets.only(top: 5, left: 15, bottom: 5),
                     alignment: Alignment.centerLeft,
                     child: const Text(
                       'Version 1.0.0',
@@ -46,6 +49,7 @@ class AppDrawer extends StatelessWidget {
               height: 50,
               child: GestureDetector(
                   onTap: () async {
+                    Navigator.pushNamed(context, 'street');
                     if (streetProvider.states.isEmpty ||
                         streetProvider.cities.isEmpty ||
                         streetProvider.districts.isEmpty) {
@@ -56,7 +60,6 @@ class AppDrawer extends StatelessWidget {
                       await streetProvider
                           .completeDistricts(authProvider.userCurrent.token!);
                     }
-                    Navigator.pushNamed(context, 'street');
                   },
                   child: Row(
                     children: const <Widget>[
@@ -88,11 +91,11 @@ class AppDrawer extends StatelessWidget {
               height: 50,
               child: GestureDetector(
                 onTap: () async {
+                  Navigator.pushNamed(context, 'license');
                   if (streetProvider.streets.isEmpty) {
                     await streetProvider
                         .completeStreets(authProvider.userCurrent.token!);
                   }
-                  Navigator.pushNamed(context, 'license');
                 },
                 child: Row(
                   children: const <Widget>[

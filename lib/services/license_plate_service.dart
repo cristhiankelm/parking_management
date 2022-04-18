@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:parking_management/models/licenseplate_model.dart';
 
 class LicenseService {
+  
   Future<http.Response> createLicense(
       LicensePlate licensePlate, String token) async {
     var url = "https://cristhiankelm.me/api/carIdentities/create";
