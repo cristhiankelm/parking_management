@@ -161,15 +161,20 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     ),
                   ),
                   addLicense == true
-                      ? SizedBox(
-                          height: 150,
+                      ? Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          height: 151,
                           child: Column(
                             children: [
                               TextFormField(
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Ingrese matricula";
+                                  } else if (value.length < 6 ||
+                                      value.length > 7) {
+                                    return "Matricula invalida";
                                   }
+                                  return null;
                                 },
                                 controller: controllerLicense,
                                 decoration: InputDecoration(
@@ -192,7 +197,9 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                   labelStyle: const TextStyle(fontSize: 15),
                                 ),
                               ),
-                              Expanded(child: Container()),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -200,7 +207,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                   GestureDetector(
                                     onTap: () {
                                       _formKey.currentState!.reset();
-                                      controller.clear();
+                                      controllerLicense.clear();
                                       setState(() {
                                         addLicense = false;
                                       });
@@ -213,27 +220,35 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () async {
-                                      LicensePlate licensePlate = LicensePlate(
-                                          enroliment: controllerLicense.text,
-                                          street: providerStreet.street!);
                                       if (_formKey.currentState!.validate()) {
-                                        // if (await provider.addStreet(street,
-                                        //         authProvider.userCurrent.token!) ==
-                                        //     true) {
-                                        //   setState(() {
-                                        //     addLicense = false;
-                                        //   });
-                                        //   controllerStreet.clear();
-                                        //   Fluttertoast.showToast(
-                                        //     msg: "Calle registrada",
-                                        //     toastLength: Toast.LENGTH_SHORT,
-                                        //   );
-                                        // } else {
-                                        //   Fluttertoast.showToast(
-                                        //     msg: "Error",
-                                        //     toastLength: Toast.LENGTH_SHORT,
-                                        //   );
-                                        // }
+                                        LicensePlate licensePlate =
+                                            LicensePlate(
+                                                enroliment: controllerLicense
+                                                    .text
+                                                    .toUpperCase(),
+                                                street_id: providerLicense
+                                                    .street!.id
+                                                    .toString());
+                                        if (await providerLicense.addLicense(
+                                                licensePlate,
+                                                authProvider
+                                                    .userCurrent.token!) ==
+                                            true) {
+                                          controllerLicense.clear();
+                                          providerLicense.filterLicenses();
+                                          setState(() {
+                                            addLicense = false;
+                                          });
+                                          Fluttertoast.showToast(
+                                            msg: "Matricula registrada",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                          );
+                                        } else {
+                                          Fluttertoast.showToast(
+                                            msg: "Error",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                          );
+                                        }
                                       }
                                     },
                                     child: MyButton(
@@ -253,11 +268,14 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
               Container(
                 margin: const EdgeInsets.only(top: 10),
                 height: MediaQuery.of(context).size.height,
+                width: 250,
                 child: ListView.builder(
                   itemCount: providerLicense.listLicenses.length,
                   itemBuilder: (context, index) {
                     return Plate(
-                        text: providerLicense.listLicenses[index].enroliment!,
+                        text: providerLicense.listLicenses.reversed
+                            .elementAt(index)
+                            .enroliment,
                         context: context);
                   },
                 ),

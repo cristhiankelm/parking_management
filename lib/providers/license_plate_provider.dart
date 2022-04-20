@@ -6,12 +6,7 @@ import 'package:parking_management/models/street_model.dart';
 import 'package:parking_management/services/license_plate_service.dart';
 
 class LicenseProvider {
-  List<LicensePlate> licenses = [
-    LicensePlate(id: 1, enroliment: "FDWA813", street: Street(id: 1)),
-    LicensePlate(id: 2, enroliment: "DSFS813", street: Street(id: 2)),
-    LicensePlate(id: 3, enroliment: "EFD854", street: Street(id: 3)),
-    LicensePlate(id: 4, enroliment: "FDT823", street: Street(id: 4))
-  ];
+  List<LicensePlate> licenses = [];
   List<LicensePlate> listLicenses = [];
 
   Street? street;
@@ -22,26 +17,44 @@ class LicenseProvider {
 
   filterLicenses() {
     for (var i = 0; i < licenses.length; i++) {
-      if (licenses[i].street!.id == street!.id) {
+      if (licenses[i].street_id == street!.id.toString()) {
         listLicenses.add(licenses[i]);
       }
     }
+    listLicenses.reversed;
   }
 
   Future completeLicenses(String currentToken) async {
     Response response = await service.getAllLicenses(currentToken);
     status = response.body.contains('error');
 
-    var data = json.decode(response.body);
+    List data = json.decode(response.body);
 
     if (status) {
-      print('data : ${data["error"]}');
+      //print('data : ${data["error"]}');
     } else {
       if (response.statusCode == 200) {
-        Map<String, dynamic> map = Map.castFrom(data);
-        for (var i = 0; i < map['data'].length; i++) {
-          licenses.add(LicensePlate.fromJson(map['data'][i]));
+        for (var i = 0; i < data.length; i++) {
+          licenses.add(LicensePlate.fromJson(data[i]));
         }
+      }
+    }
+  }
+
+  Future<bool> addLicense(LicensePlate license, String currentToken) async {
+    Response response = await service.createLicense(license, currentToken);
+    status = response.body.contains('error');
+
+    if (status) {
+      return false;
+    } else {
+      if (response.statusCode == 201) {
+        listLicenses.clear();
+        licenses.clear();
+        await completeLicenses(currentToken);
+        return true;
+      } else {
+        return false;
       }
     }
   }

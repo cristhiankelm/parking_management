@@ -332,7 +332,6 @@ class _StreetPageState extends State<StreetPage> {
                                 ? const Icon(Icons.add)
                                 : const Icon(Icons.remove),
                             onPressed: () {
-                              controllerDistrict.clear();
                               setState(() {
                                 addDistrict = !addDistrict;
                               });
@@ -346,8 +345,16 @@ class _StreetPageState extends State<StreetPage> {
                 ),
                 addDistrict == true
                     ? SizedBox(
-                        height: 60,
-                        child: TextField(
+                        height: 65,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Campo obligatorio";
+                            } else if (value.length < 4) {
+                              return "Ingrese un barrio existente";
+                            }
+                            return null;
+                          },
                           controller: controllerNewDistrict,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
@@ -386,20 +393,12 @@ class _StreetPageState extends State<StreetPage> {
                                               addDistrict = false;
                                               showTextButtonDistrict = true;
                                             });
+                                            providerStreet.listDistricts
+                                                .clear();
                                             controllerNewDistrict.clear();
                                             providerStreet.filterDistricts();
                                             Fluttertoast.showToast(
                                               msg: "Barrio registrado",
-                                              toastLength: Toast.LENGTH_SHORT,
-                                            );
-                                          } else if (controllerNewDistrict
-                                              .text.isEmpty) {
-                                            controllerNewDistrict.clear();
-                                            setState(() {
-                                              showTextButtonDistrict = true;
-                                            });
-                                            Fluttertoast.showToast(
-                                              msg: "Ingrese un barrio valido",
                                               toastLength: Toast.LENGTH_SHORT,
                                             );
                                           } else {
@@ -455,7 +454,15 @@ class _StreetPageState extends State<StreetPage> {
                         height: 150,
                         child: Column(
                           children: [
-                            TextField(
+                            TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Campo obligatorio";
+                                } else if (value.length < 4) {
+                                  return "Ingrese una calle valida";
+                                }
+                                return null;
+                              },
                               controller: controllerStreet,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(

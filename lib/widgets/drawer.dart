@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parking_management/providers/auth_provider.dart';
+import 'package:parking_management/providers/license_plate_provider.dart';
 import 'package:parking_management/providers/street_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var streetProvider = Provider.of<StreetProvider>(context, listen: false);
+    var licenseProvider = Provider.of<LicenseProvider>(context, listen: false);
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Drawer(
       backgroundColor: Colors.white,
@@ -92,9 +94,14 @@ class AppDrawer extends StatelessWidget {
               child: GestureDetector(
                 onTap: () async {
                   Navigator.pushNamed(context, 'license');
+                  licenseProvider.listLicenses.clear();
                   if (streetProvider.streets.isEmpty) {
                     await streetProvider
                         .completeStreets(authProvider.userCurrent.token!);
+                  }
+                  if (licenseProvider.licenses.isEmpty) {
+                    await licenseProvider
+                        .completeLicenses(authProvider.userCurrent.token!);
                   }
                 },
                 child: Row(

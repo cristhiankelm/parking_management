@@ -31,7 +31,7 @@ class Myapp extends StatelessWidget {
           'login': (_) => const LoginPage(),
           'home': (_) => HomePage(),
           'street': (_) => const StreetPage(),
-          'license': (_) => LicensePlateScreen()
+          'license': (_) => const LicensePlateScreen()
         },
         theme: ThemeData.light());
   }
