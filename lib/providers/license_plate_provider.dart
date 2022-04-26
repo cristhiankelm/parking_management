@@ -58,4 +58,22 @@ class LicenseProvider {
       }
     }
   }
+
+  Future<bool> removeLicense(int id, String currentToken) async {
+    Response response = await service.removeLicense(currentToken, id);
+    status = response.body.contains('error');
+
+    if (status) {
+      return false;
+    } else {
+      if (response.statusCode == 200) {
+        listLicenses.clear();
+        licenses.clear();
+        await completeLicenses(currentToken);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 }

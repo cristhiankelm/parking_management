@@ -19,4 +19,13 @@ class LicenseService {
     );
     return response;
   }
+
+  Future<http.Response> removeLicense(String token, int id) async {
+    var url = "https://cristhiankelm.me/api/carIdentity/$id";
+    var response = http.delete(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer ' + token},
+    );
+    return response;
+  }
 }
