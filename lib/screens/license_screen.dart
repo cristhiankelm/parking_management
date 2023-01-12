@@ -156,7 +156,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     TextButton(
                       onPressed: () {
                         setState(() {
-                          addLicense = true;
+                          addLicense = !addLicense;
                         });
                       },
                       child: const Text(
@@ -252,10 +252,10 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                                                 .token!) ==
                                                     true) {
                                                   controllerLicense.clear();
-                                                  providerLicense
-                                                      .filterLicenses();
+                                                  // providerLicense
+                                                  //     .filterLicenses();
                                                   setState(() {
-                                                    addLicense = false;
+                                                    // addLicense = false;
                                                     isSavingLicense = false;
                                                   });
                                                   FocusManager
@@ -348,7 +348,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                                     .userCurrent.token!) ==
                                             true) {
                                           controllerLicense.clear();
-                                          providerLicense.filterLicenses();
                                           Fluttertoast.showToast(
                                             msg: "Matricula eliminada",
                                             toastLength: Toast.LENGTH_SHORT,

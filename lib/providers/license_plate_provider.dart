@@ -45,13 +45,17 @@ class LicenseProvider {
     Response response = await service.createLicense(license, currentToken);
     status = response.body.contains('error');
 
+    var data = json.decode(response.body);
+
     if (status) {
       return false;
     } else {
       if (response.statusCode == 201) {
         listLicenses.clear();
-        licenses.clear();
-        await completeLicenses(currentToken);
+        LicensePlate plate = LicensePlate.fromJsonData(data);
+        plate.street_id = street!.id.toString();
+        licenses.add(plate);
+        filterLicenses();
         return true;
       } else {
         return false;
@@ -68,8 +72,10 @@ class LicenseProvider {
     } else {
       if (response.statusCode == 200) {
         listLicenses.clear();
-        licenses.clear();
-        await completeLicenses(currentToken);
+        // licenses.clear();
+        // await completeLicenses(currentToken);
+        licenses.removeWhere((element) => element.id == id);
+        filterLicenses();
         return true;
       } else {
         return false;

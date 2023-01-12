@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:parking_management/models/user_model.dart';
 
 class AuthService {
-  String serverUrl = "https://cristhiankelm.me/api";
+  String serverUrl = "http://smi-cloud.net/api";
 
   Future<http.Response> loginData(User user) async {
     String myUrl = "$serverUrl/login";
